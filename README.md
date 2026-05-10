@@ -11,4 +11,4 @@ https://Mahirsukhija21.github.io/Sai-Ambulance-Services
 - Service information
 
 ## Author
-Mahirsukhija21
+Mahir Sukhija
