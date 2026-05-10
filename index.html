@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sai Ambulance Services</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red: #C0252B; --red-dark: #8f1a1e; --red-light: #fdf2f2;
+    --cream: #fdfaf7; --ink: #1a1310; --muted: #6b6460;
+    --border: rgba(0,0,0,0.08); --white: #ffffff;
+    --blue: #1d4ed8; --blue-light: #eff6ff;
+    --orange: #c2410c; --orange-light: #fff7ed;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--ink); font-size: 16px; line-height: 1.7; overflow-x: hidden; }
+
+  /* ── NAV ── */
+  nav { background: var(--white); border-bottom: 1px solid var(--border); padding: 1rem 2.5rem; display: flex; justify-content: space-between; align-items: center; position: fixed; top: 0; width: 100%; z-index: 1000; box-shadow: 0 1px 12px rgba(0,0,0,0.06); }
+  .logo { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--red); font-weight: 600; cursor: pointer; user-select: none; }
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a { text-decoration: none; color: var(--muted); font-size: 14px; font-weight: 500; transition: color 0.2s; cursor: pointer; position: relative; padding-bottom: 2px; }
+  .nav-links a::after { content: ''; position: absolute; bottom: -2px; left: 0; width: 0; height: 2px; background: var(--red); transition: width 0.25s ease; border-radius: 2px; }
+  .nav-links a:hover { color: var(--red); }
+  .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+  .nav-links a.active { color: var(--red); font-weight: 600; }
+  .nav-cta { background: var(--red); color: #fff; border: none; padding: 9px 20px; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; transition: background 0.2s; }
+  .nav-cta:hover { background: var(--red-dark); }
+
+  /* ── PAGE TRANSITION ── */
+  .page-wrapper { padding-top: 64px; }
+  .page-view { display: none; opacity: 0; transform: translateY(20px); transition: opacity 0.5s cubic-bezier(0.4,0,0.2,1), transform 0.5s cubic-bezier(0.4,0,0.2,1); }
+  .page-view.active { display: block; }
+  .page-view.visible { opacity: 1; transform: translateY(0); }
+
+  /* ── SHARED ── */
+  .section { padding: 4rem 2.5rem; max-width: 900px; margin: 0 auto; }
+  .section-divider { height: 1px; background: var(--border); max-width: 900px; margin: 0 auto; }
+  .page-label { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--red); font-weight: 500; margin-bottom: 0.75rem; display: block; }
+  h1 { font-family: 'Playfair Display', serif; font-size: 44px; line-height: 1.2; font-weight: 600; margin-bottom: 1.25rem; }
+  h2 { font-family: 'Playfair Display', serif; font-size: 32px; line-height: 1.25; font-weight: 500; margin-bottom: 1rem; }
+  h3 { font-size: 18px; font-weight: 500; margin-bottom: 0.4rem; }
+  p { color: #3d3835; margin-bottom: 1rem; line-height: 1.8; }
+  p:last-child { margin-bottom: 0; }
+
+  /* ── HERO ── */
+  .hero-section { background: var(--red); color: #fff; padding: 5rem 2.5rem 4rem; }
+  .hero-inner { max-width: 900px; margin: 0 auto; }
+  .hero-tag { display: inline-block; background: rgba(255,255,255,0.18); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; padding: 4px 14px; border-radius: 20px; margin-bottom: 1.25rem; color: #fff; }
+  .hero-section h1 { color: #fff; font-size: 48px; }
+  .hero-sub { font-size: 18px; opacity: 0.88; max-width: 540px; margin-bottom: 2rem; line-height: 1.6; color: #fff; }
+  .hero-btns { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 2.5rem; }
+  .btn-white { background: #fff; color: var(--red); border: none; padding: 13px 28px; border-radius: 7px; font-size: 15px; font-weight: 500; cursor: pointer; transition: opacity 0.2s, transform 0.2s; }
+  .btn-white:hover { opacity: 0.92; transform: translateY(-1px); }
+  .btn-ghost { background: transparent; color: #fff; border: 1.5px solid rgba(255,255,255,0.55); padding: 13px 28px; border-radius: 7px; font-size: 15px; cursor: pointer; transition: background 0.2s, transform 0.2s; }
+  .btn-ghost:hover { background: rgba(255,255,255,0.1); transform: translateY(-1px); }
+  .hero-stats { display: grid; grid-template-columns: repeat(2, auto); gap: 2rem; width: fit-content; }
+  .hero-stat-num { font-family: 'Playfair Display', serif; font-size: 30px; font-weight: 600; line-height: 1; color: #fff; }
+  .hero-stat-lbl { font-size: 13px; opacity: 0.75; margin-top: 4px; color: #fff; }
+
+  /* ── TAGLINE ── */
+  .tagline-block { background: var(--red-light); border-left: 4px solid var(--red); padding: 1.5rem 2rem; border-radius: 0 8px 8px 0; margin: 2rem 0; }
+  .tagline-block p { color: var(--red-dark); font-size: 17px; font-style: italic; margin: 0; font-family: 'Playfair Display', serif; }
+
+  /* ── CARDS ── */
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin: 2rem 0; }
+  .card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; transition: box-shadow 0.2s, transform 0.2s; }
+  .card:hover { box-shadow: 0 6px 24px rgba(0,0,0,0.08); transform: translateY(-2px); }
+  .card-icon { font-size: 26px; margin-bottom: 0.75rem; }
+  .card h3 { font-size: 16px; font-weight: 500; margin-bottom: 0.4rem; }
+  .card p { font-size: 14px; color: var(--muted); line-height: 1.6; margin: 0; }
+
+  /* ── SERVICE ITEMS ── */
+  .service-item { border-bottom: 1px solid var(--border); padding: 1.75rem 0; transition: background 0.2s; }
+  .service-item:last-child { border-bottom: none; }
+  .service-item h3 { font-size: 19px; margin-bottom: 0.4rem; }
+  .service-badge { display: inline-block; background: var(--red-light); color: var(--red); font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 20px; margin-left: 8px; vertical-align: middle; }
+
+  /* ── VALUES GRID ── */
+  .values-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 1.75rem 0; }
+  .value-card { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem; transition: box-shadow 0.2s; }
+  .value-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+  .value-card h3 { font-size: 15px; font-weight: 500; margin-bottom: 0.3rem; color: var(--red); }
+  .value-card p { font-size: 13px; color: var(--muted); margin: 0; line-height: 1.6; }
+
+  /* ── TRUST BAR ── */
+  .trust-bar { display: flex; gap: 10px; flex-wrap: wrap; margin: 1.5rem 0; }
+  .trust-pill { background: var(--white); border: 1px solid var(--border); border-radius: 20px; font-size: 13px; color: var(--muted); padding: 6px 14px; display: flex; align-items: center; gap: 6px; }
+  .trust-pill::before { content: "✓"; color: var(--red); font-weight: 500; }
+  .section-intro { max-width: 580px; margin-bottom: 2rem; }
+  .section-intro p { color: var(--muted); }
+
+  /* ── ABOUT HERO ── */
+  .about-hero { background: var(--red); padding: 4rem 2.5rem 3.5rem; }
+  .about-hero-inner { max-width: 900px; margin: 0 auto; }
+  .about-hero h1 { color: #fff; }
+  .about-hero > .about-hero-inner > p { font-size: 17px; color: rgba(255,255,255,0.85); max-width: 580px; line-height: 1.7; }
+
+  /* ── FLEET ── */
+  .fleet-header { margin-bottom: 2.5rem; }
+  .fleet-header p { color: var(--muted); margin-top: 0.5rem; }
+  .amb-card { background: var(--white); border: 1px solid var(--border); border-radius: 18px; overflow: hidden; margin-bottom: 2.5rem; box-shadow: 0 2px 16px rgba(0,0,0,0.05); transition: box-shadow 0.3s, transform 0.3s; }
+  .amb-card:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.1); transform: translateY(-3px); }
+  .amb-card.acls { border-top: 4px solid var(--red); }
+  .amb-card.bcls { border-top: 4px solid var(--blue); }
+  .amb-card.icu  { border-top: 4px solid var(--orange); }
+  .amb-card-image { width: 100%; height: 300px; object-fit: cover; display: block; }
+  .amb-card-image-placeholder { width: 100%; height: 300px; display: none; align-items: center; justify-content: center; font-size: 80px; background: linear-gradient(135deg, #f5f0eb, #ede8e3); }
+  .amb-card-body { padding: 2rem 2.25rem 2.25rem; }
+  .amb-type-badge { display: inline-block; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; padding: 4px 12px; border-radius: 20px; margin-bottom: 0.85rem; }
+  .badge-acls { background: var(--red-light); color: var(--red); }
+  .badge-bcls { background: var(--blue-light); color: var(--blue); }
+  .badge-icu  { background: var(--orange-light); color: var(--orange); }
+  .amb-card h2 { font-size: 26px; margin-bottom: 0.5rem; }
+  .amb-tagline { font-size: 15px; color: var(--muted); font-style: italic; margin-bottom: 1.25rem; border-bottom: 1px solid var(--border); padding-bottom: 1.25rem; }
+  .amb-desc { font-size: 15px; margin-bottom: 1.5rem; }
+  .advantages-title { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 1rem; }
+  .advantages-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1.5rem; }
+  .adv-item { display: flex; align-items: flex-start; gap: 10px; background: var(--cream); border: 1px solid var(--border); border-radius: 10px; padding: 0.9rem 1rem; }
+  .adv-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .adv-text strong { display: block; font-size: 14px; font-weight: 500; color: var(--ink); }
+  .adv-text span { font-size: 13px; color: var(--muted); line-height: 1.5; }
+  .equipment-wrap { margin-top: 0.5rem; }
+  .equipment-label { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.75rem; display: block; }
+  .equipment-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+  .eq-tag { background: var(--white); border: 1px solid var(--border); border-radius: 20px; font-size: 13px; color: var(--muted); padding: 5px 12px; }
+  .eq-tag::before { content: "✓ "; color: var(--red); font-weight: 500; font-size: 12px; }
+
+  /* ── CONTACT HERO ── */
+  .contact-hero { background: var(--red); padding: 3.5rem 2.5rem 3rem; }
+  .contact-hero-inner { max-width: 900px; margin: 0 auto; }
+  .contact-hero h1 { color: #fff; font-size: 40px; margin-bottom: 0.75rem; }
+  .contact-hero p { font-size: 17px; color: rgba(255,255,255,0.85); max-width: 520px; line-height: 1.65; margin: 0; }
+
+  /* ── EMERGENCY STRIP ── */
+  .emergency-strip { background: var(--white); border-bottom: 1px solid var(--border); }
+  .emergency-strip-inner { max-width: 900px; margin: 0 auto; padding: 1.25rem 2.5rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+  .strip-left { display: flex; align-items: center; gap: 14px; }
+  .strip-icon { width: 44px; height: 44px; background: var(--red); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .strip-icon svg { width: 20px; height: 20px; fill: #fff; }
+  .strip-label { font-size: 12px; color: var(--muted); font-weight: 500; margin-bottom: 2px; }
+  .strip-nums { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 600; color: var(--red); line-height: 1.2; }
+  .strip-badge { background: var(--red-light); color: var(--red); font-size: 12px; font-weight: 500; padding: 5px 14px; border-radius: 20px; border: 1px solid rgba(192,37,43,0.2); white-space: nowrap; }
+
+  /* ── CONTACT TILES ── */
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 2.5rem; }
+  .info-tile { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem 1.5rem; transition: box-shadow 0.2s; }
+  .info-tile:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.07); }
+  .info-tile-icon { font-size: 20px; margin-bottom: 0.6rem; display: block; }
+  .info-tile-label { font-size: 12px; color: var(--muted); font-weight: 500; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.06em; }
+  .info-tile-val { font-size: 15px; font-weight: 500; color: var(--ink); line-height: 1.4; }
+  .info-tile-val a { color: var(--red); text-decoration: none; }
+  .info-tile-val a:hover { text-decoration: underline; }
+  .info-tile.whatsapp { border-color: #25d366; background: #f0fdf4; }
+  .info-tile.whatsapp .info-tile-val { color: #15803d; }
+
+  /* ── FORM ── */
+  .form-card { background: var(--white); border: 1px solid var(--border); border-radius: 16px; padding: 2.25rem; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .form-grid.full { grid-template-columns: 1fr; }
+  .field { display: flex; flex-direction: column; gap: 5px; }
+  label { font-size: 13px; color: var(--muted); font-weight: 500; }
+  input, select, textarea { width: 100%; border: 1px solid rgba(0,0,0,0.12); border-radius: 8px; padding: 11px 14px; font-size: 14px; font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--ink); outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
+  input:focus, select:focus, textarea:focus { border-color: var(--red); box-shadow: 0 0 0 3px rgba(192,37,43,0.08); }
+  textarea { resize: vertical; min-height: 100px; }
+  select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b6460' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; }
+  .form-actions { display: flex; align-items: center; gap: 16px; margin-top: 6px; flex-wrap: wrap; }
+  .submit-btn { background: var(--red); color: #fff; border: none; padding: 13px 36px; border-radius: 8px; font-size: 15px; font-weight: 500; cursor: pointer; transition: background 0.2s, transform 0.2s; }
+  .submit-btn:hover { background: var(--red-dark); transform: translateY(-1px); }
+  .form-note { font-size: 13px; color: var(--muted); line-height: 1.5; flex: 1; min-width: 200px; }
+  .success-msg { display: none; background: #f0fdf4; border: 1px solid #86efac; border-radius: 10px; padding: 1.25rem 1.5rem; margin-top: 1rem; }
+  .success-msg p { color: #15803d; margin: 0; font-size: 15px; font-weight: 500; }
+
+  /* ── REASSURANCE ── */
+  .reassure { background: var(--red-light); border: 1px solid rgba(192,37,43,0.12); border-radius: 12px; padding: 1.5rem 2rem; display: flex; gap: 2rem; flex-wrap: wrap; margin-top: 2.5rem; }
+  .reassure-item { display: flex; align-items: flex-start; gap: 10px; flex: 1; min-width: 160px; }
+  .reassure-icon { font-size: 20px; flex-shrink: 0; margin-top: 2px; }
+  .reassure-text strong { display: block; font-size: 14px; font-weight: 500; color: var(--red-dark); }
+  .reassure-text span { font-size: 13px; color: var(--muted); }
+
+  /* ── SECTION GAP ── */
+  .section-gap { margin-bottom: 2.5rem; }
+  .section-head { margin-bottom: 1.5rem; }
+  .section-head p { color: var(--muted); font-size: 15px; margin: 0; }
+
+  /* ── FOOTER ── */
+  footer { background: var(--ink); color: rgba(255,255,255,0.6); text-align: center; padding: 1.5rem 2rem; font-size: 13px; }
+  footer strong { color: #fff; }
+
+  @media (max-width: 640px) {
+    nav { padding: 1rem 1.25rem; }
+    .nav-links { gap: 1rem; }
+    h1 { font-size: 30px; }
+    .hero-section h1 { font-size: 32px; }
+    .section { padding: 2.5rem 1.25rem; }
+    .info-grid { grid-template-columns: 1fr 1fr; }
+    .form-grid { grid-template-columns: 1fr; }
+    .contact-hero, .about-hero { padding: 2.5rem 1.25rem 2rem; }
+    .emergency-strip-inner { padding: 1rem 1.25rem; }
+    .strip-nums { font-size: 16px; }
+    .advantages-grid { grid-template-columns: 1fr; }
+    .amb-card-image { height: 200px; }
+    .amb-card-body { padding: 1.5rem; }
+    .values-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 400px) {
+    .info-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══ NAV ═══ -->
+<nav>
+  <div class="logo" onclick="showPage('home')">🚑 Sai Ambulance</div>
+  <ul class="nav-links">
+    <li><a onclick="showPage('home')"    id="nav-home"    class="active">Home</a></li>
+    <li><a onclick="showPage('about')"   id="nav-about">About Us</a></li>
+    <li><a onclick="showPage('services')" id="nav-services">Services</a></li>
+    <li><a onclick="showPage('contact')" id="nav-contact">Contact</a></li>
+  </ul>
+  <button class="nav-cta" onclick="window.location.href='tel:+919056434553'">📞 Call Now</button>
+</nav>
+
+<div class="page-wrapper">
+
+<!-- ══════════════════════════════════════
+     PAGE: HOME
+══════════════════════════════════════ -->
+<div class="page-view active" id="page-home">
+
+  <section class="hero-section">
+    <div class="hero-inner">
+      <div class="hero-tag">Pan-India Emergency Medical Services</div>
+      <h1>When Every Second<br>Matters, We're There.</h1>
+      <p class="hero-sub">Sai Ambulance Services provides compassionate, professional emergency medical transport — available 24 hours a day, 7 days a week, across India.</p>
+      <div class="hero-btns">
+        <button class="btn-white" onclick="window.location.href='tel:+919056434553'">📞 Call Our Helpline</button>
+        <button class="btn-ghost" onclick="showPage('contact')">Book an Ambulance</button>
+      </div>
+      <div class="hero-stats">
+        <div><div class="hero-stat-num">24/7</div><div class="hero-stat-lbl">Always available</div></div>
+        <div><div class="hero-stat-num">5,000+</div><div class="hero-stat-lbl">Patients served</div></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section">
+    <div class="tagline-block">
+      <p>"We don't just transport patients — we carry hope, care, and urgency in every journey."</p>
+    </div>
+    <span class="page-label">Why choose us</span>
+    <h2>Care You Can Count On,<br>Any Time, Anywhere</h2>
+    <div class="section-intro">
+      <p>Medical emergencies don't follow a schedule. That's why Sai Ambulance Services operates round the clock, with a trained team and fully equipped vehicles ready to respond the moment you call.</p>
+    </div>
+    <div class="card-grid">
+      <div class="card"><div class="card-icon">⚡</div><h3>Rapid Response</h3><p>Our fleet is strategically positioned for the fastest possible response times in your area.</p></div>
+      <div class="card"><div class="card-icon">🩺</div><h3>Trained Paramedics</h3><p>Every ambulance is staffed with certified paramedics and emergency medical technicians.</p></div>
+      <div class="card"><div class="card-icon">🏥</div><h3>Advanced Equipment</h3><p>From basic life support to ICU-grade systems — we bring the hospital to you.</p></div>
+      <div class="card"><div class="card-icon">❤️</div><h3>Compassionate Care</h3><p>We treat every patient and family with the dignity, respect, and kindness they deserve.</p></div>
+      <div class="card"><div class="card-icon">📍</div><h3>Pan-India Coverage</h3><p>Serving cities, towns, and districts across India — wherever you need us most.</p></div>
+    </div>
+    <div class="trust-bar">
+      <div class="trust-pill">Government certified</div>
+      <div class="trust-pill">GPS-tracked fleet</div>
+      <div class="trust-pill">MCI-trained staff</div>
+      <div class="trust-pill">ISO compliant vehicles</div>
+    </div>
+    <div style="margin-top:2rem; display:flex; gap:12px; flex-wrap:wrap;">
+      <button class="btn-white" style="background:var(--red);color:#fff;" onclick="showPage('about')">Learn About Us →</button>
+      <button class="btn-white" style="border:1.5px solid var(--border);" onclick="showPage('services')">Our Services →</button>
+    </div>
+  </div>
+
+</div><!-- end home -->
+
+
+<!-- ══════════════════════════════════════
+     PAGE: ABOUT
+══════════════════════════════════════ -->
+<div class="page-view" id="page-about">
+
+  <div class="about-hero">
+    <div class="about-hero-inner">
+      <div class="hero-tag">About Us</div>
+      <h1>Driven by Purpose,<br>Guided by Compassion</h1>
+      <p>Learn about who we are, what we stand for, and the state-of-the-art ambulances we operate to keep India's patients safe.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <span class="page-label">Our Story</span>
+    <h2>Born from a Mission to Save Lives</h2>
+    <p>Sai Ambulance Services was founded with one simple but powerful belief: <strong>no one should suffer because help arrived too late.</strong> What started as a small fleet with a big heart has grown into one of India's trusted emergency medical service providers — with ambulances operating across multiple states, serving thousands of patients every year.</p>
+    <p>Our name is our commitment. Named after the timeless spirit of selfless service, Sai Ambulance brings together skilled medical professionals, modern technology, and genuine human care to deliver help when it matters most.</p>
+    <div class="tagline-block">
+      <p>"Our mission is simple — to reach you in time, care for you along the way, and deliver you safely to the care you need."</p>
+    </div>
+
+    <div class="section-divider" style="margin:2.5rem 0;"></div>
+
+    <span class="page-label">What we stand for</span>
+    <h2>Our Core Values</h2>
+    <div class="values-grid">
+      <div class="value-card"><h3>Speed</h3><p>Every process we follow is designed to get help to you as fast as possible.</p></div>
+      <div class="value-card"><h3>Compassion</h3><p>We show up with skill and with heart — always, for every patient and family.</p></div>
+      <div class="value-card"><h3>Integrity</h3><p>Transparent pricing. Honest communication. No surprises in a crisis.</p></div>
+      <div class="value-card"><h3>Excellence</h3><p>Our team trains continuously to meet the highest medical standards.</p></div>
+      <div class="value-card"><h3>Accessibility</h3><p>Emergency care shouldn't be a privilege — we strive to serve everyone.</p></div>
+      <div class="value-card"><h3>Community</h3><p>We are a pillar of the communities we serve — here not just for crises, but for care.</p></div>
+    </div>
+
+    <div class="section-divider" style="margin:2.5rem 0;"></div>
+
+    <span class="page-label">Our People</span>
+    <h2>The Team Behind Every Response</h2>
+    <p>Sai Ambulance is powered by a dedicated team of emergency medical technicians (EMTs), paramedics, nurses, and support staff — all certified, experienced, and driven by a shared commitment to saving lives. Our drivers are specially trained in emergency navigation, ensuring both speed and safety on every journey.</p>
+    <p>We invest in regular training, updated protocols, and the latest medical equipment so that our team is always prepared — for the routine and the extraordinary.</p>
+
+    <div class="section-divider" style="margin:2.5rem 0;"></div>
+
+    <!-- FLEET -->
+    <div class="fleet-header">
+      <span class="page-label">Our Fleet</span>
+      <h2>State-of-the-Art Ambulances,<br>Built for Every Emergency</h2>
+      <p>Every vehicle in the Sai Ambulance fleet is purpose-built, fully equipped, and staffed by trained medical professionals. We operate three specialised types of ambulances to match every level of patient need.</p>
+    </div>
+
+    <!-- ACLS -->
+    <div class="amb-card acls">
+      <img class="amb-card-image" src="https://www.ambus.in/wp-content/uploads/2021/06/ALS-Ambulance.jpg" alt="ACLS Ambulance" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+      <div class="amb-card-image-placeholder">🚑</div>
+      <div class="amb-card-body">
+        <div class="amb-type-badge badge-acls">ACLS — Advanced Cardiac Life Support</div>
+        <h2>ACLS Ambulance</h2>
+        <p class="amb-tagline">"Hospital-grade cardiac care, delivered on the move."</p>
+        <p class="amb-desc">The ACLS Ambulance is our most advanced pre-hospital unit, specifically designed for patients experiencing life-threatening cardiac and respiratory emergencies. Equipped with the full range of cardiac intervention tools, this ambulance allows our ACLS-certified paramedics to initiate critical treatment — including defibrillation, advanced airway management, and IV drug therapy — from the moment they reach the patient.</p>
+        <p class="advantages-title">Key Advantages</p>
+        <div class="advantages-grid">
+          <div class="adv-item"><div class="adv-icon">❤️</div><div class="adv-text"><strong>Cardiac Emergency Ready</strong><span>Equipped to handle heart attacks, arrhythmias, and cardiac arrest on site.</span></div></div>
+          <div class="adv-item"><div class="adv-icon">⚡</div><div class="adv-text"><strong>Immediate Defibrillation</strong><span>Advanced defibrillators for instant shockable rhythm treatment.</span></div></div>
+          <div class="adv-item"><div class="adv-icon">💉</div><div class="adv-text"><strong>IV Drug Administration</strong><span>Life-saving medications administered en route to the hospital.</span></div></div>
+          <div class="adv-item"><div class="adv-icon">🫁</div><div class="adv-text"><strong>Advanced Airway Management</strong><span>Intubation and advanced airway tools for respiratory compromise.</span></div></div>
+          <div class="adv-item"><div class="adv-icon">📡</div><div class="adv-text"><strong>Real-time ECG Monitoring</strong><span>12-lead ECG transmitted to receiving hospitals for faster treatment.</span></div></div>
+          <div class="adv-item"><div class="adv-icon">👨‍⚕️</div><div class="adv-text"><strong>ACLS-Certified Crew</strong><span>Staffed by paramedics with advanced cardiac life support certification.</span></div></div>
+        </div>
+        <div class="equipment-wrap">
+          <span class="equipment-label">On-board Equipment</span>
+          <div class="equipment-tags">
+            <div class="eq-tag">12-Lead ECG Monitor</div><div class="eq-tag">Defibrillator (AED)</div><div class="eq-tag">Cardiac Monitor</div><div class="eq-tag">IV Infusion Pump</div><div class="eq-tag">Suction Machine</div><div class="eq-tag">Intubation Kit</div><div class="eq-tag">Oxygen Cylinder</div><div class="eq-tag">Emergency Drug Kit</div><div class="eq-tag">Pulse Oximeter</div><div class="eq-tag">BP Monitor</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BCLS -->
+    <div class="amb-card bcls">
+      <img class="amb-card-image" src="data:image/jpeg;base64,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" alt="BCLS Ambulance" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+      <div class="amb-card-image-placeholder">🚐</div>
+      <div class="amb-card-body">
+        <div class="amb-type-badge badge-bcls">BCLS — Basic Cardiac Life Support</div>
+        <h2>BCLS Ambulance</h2>
+        <p class="amb-tagline">"Fast, reliable emergency care for stable and semi-critical patients."</p>
+        <p class="amb-desc">The BCLS Ambulance is our frontline emergency response vehicle, designed to provide immediate basic life support to patients in need of urgent but non-critical medical care. Whether responding to accidents, falls, breathing difficulties, or other medical emergencies, the BCLS unit delivers essential stabilising care while ensuring safe, speedy transport to the nearest appropriate hospital.</p>
+        <p class="advantages-title">Key Advantages</p>
+        <div class="advantages-grid">
+          <div class="adv-item"><div class="adv-icon">⚡</div><div class="adv-text"><strong>Rapid First Response</strong><span>Designed for the fastest dispatch and shortest response times.</span></div></div>
+          <div class="adv-item"><div class="adv-icon">🩹</div><div class="adv-text"><strong>Trauma & Accident Ready</strong><span>Fully equipped to manage trauma, fractures, bleeding, and injuries.</span></div></div>
+          <div class="adv-item"><div class="adv-icon">🫀</div><div class="adv-text"><strong>CPR & AED Capable</strong><span>Trained crew and equipment for immediate CPR and basic defibrillation.</span></div></div>
+          <div class="adv-item"><div class="adv-icon">🌬️</div><div class="adv-text"><strong>Oxygen Support</strong><span>Supplemental oxygen therapy for respiratory distress patients.</span></div></div>
+          <div class="adv-item"><div class="adv-icon">🏥</div><div class="adv-text"><strong>Safe Hospital Transfer</strong><span>Ideal for stable patient transport between facilities.</span></div></div>
+          <div class="adv-item"><div class="adv-icon">💰</div><div class="adv-text"><strong>Cost-Effective Care</strong><span>Quality emergency transport at accessible rates for all patients.</span></div></div>
+        </div>
+        <div class="equipment-wrap">
+          <span class="equipment-label">On-board Equipment</span>
+          <div class="equipment-tags">
+            <div class="eq-tag">AED (Defibrillator)</div><div class="eq-tag">Oxygen Cylinder & Mask</div><div class="eq-tag">Stretcher & Spine Board</div><div class="eq-tag">BP Monitor</div><div class="eq-tag">Pulse Oximeter</div><div class="eq-tag">Suction Unit</div><div class="eq-tag">First Aid & Trauma Kit</div><div class="eq-tag">Bag Valve Mask (BVM)</div><div class="eq-tag">Cervical Collar</div><div class="eq-tag">Glucometer</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ICU -->
+    <div class="amb-card icu">
+      <img class="amb-card-image" src="https://goaid.in/wp-content/uploads/2023/08/ICU-Ventilator-Ambulance.jpg" alt="ICU Ambulance" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+      <div class="amb-card-image-placeholder">🏥</div>
+      <div class="amb-card-body">
+        <div class="amb-type-badge badge-icu">ICU — Intensive Care Unit on Wheels</div>
+        <h2>ICU Ambulance</h2>
+        <p class="amb-tagline">"A fully functioning ICU, moving with your loved one."</p>
+        <p class="amb-desc">The ICU Ambulance is our most intensive care vehicle — a mobile intensive care unit that replicates the capabilities of a hospital ICU in a moving environment. Designed for critically ill patients who cannot safely travel without continuous monitoring and life-support systems, this unit is essential for inter-hospital transfers of ventilated patients, post-operative critical cases, and those requiring continuous IV therapy or haemodynamic monitoring.</p>
+        <p class="advantages-title">Key Advantages</p>
+        <div class="advantages-grid">
+          <div class="adv-item"><div class="adv-icon">🫁</div><div class="adv-text"><strong>Ventilator Support</strong><span>Transport ventilator for patients who cannot breathe independently.</span></div></div>
+          <div class="adv-item"><div class="adv-icon">📊</div><div class="adv-text"><strong>Continuous ICU Monitoring</strong><span>SpO2, ECG, NIBP, EtCO2 — all monitored in real time throughout the journey.</span></div></div>
+          <div class="adv-item"><div class="adv-icon">💧</div><div class="adv-text"><strong>Multi-channel Infusion</strong><span>Multiple IV infusion pumps for uninterrupted drug and fluid delivery.</span></div></div>
+          <div class="adv-item"><div class="adv-icon">🔋</div><div class="adv-text"><strong>Uninterrupted Power Supply</strong><span>Built-in inverter and backup power ensuring all equipment stays on.</span></div></div>
+          <div class="adv-item"><div class="adv-icon">👨‍⚕️</div><div class="adv-text"><strong>ICU-Trained Paramedic</strong><span>Staffed by paramedics with critical care and ICU management training.</span></div></div>
+          <div class="adv-item"><div class="adv-icon">🔄</div><div class="adv-text"><strong>Seamless Hospital Handover</strong><span>Pre-coordination with receiving ICU teams for smooth patient transfer.</span></div></div>
+        </div>
+        <div class="equipment-wrap">
+          <span class="equipment-label">On-board Equipment</span>
+          <div class="equipment-tags">
+            <div class="eq-tag">Transport Ventilator</div><div class="eq-tag">Multi-para Monitor</div><div class="eq-tag">Defibrillator</div><div class="eq-tag">Infusion Pump (×2)</div><div class="eq-tag">Syringe Pump</div><div class="eq-tag">Suction Machine</div><div class="eq-tag">Oxygen Concentrator</div><div class="eq-tag">Portable Nebuliser</div><div class="eq-tag">EtCO2 Monitor</div><div class="eq-tag">Intubation Kit</div><div class="eq-tag">Emergency Drug Tray</div><div class="eq-tag">UPS / Inverter</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end section -->
+</div><!-- end about -->
+
+
+<!-- ══════════════════════════════════════
+     PAGE: SERVICES
+══════════════════════════════════════ -->
+<div class="page-view" id="page-services">
+
+  <div class="about-hero">
+    <div class="about-hero-inner">
+      <div class="hero-tag">Our Services</div>
+      <h1>The Right Care,<br>Every Time You Need It</h1>
+      <p>From sudden emergencies to planned medical transfers, Sai Ambulance provides a full range of services to match every situation.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="service-item"><h3>Emergency Ambulance <span class="service-badge">24/7</span></h3><p>Our frontline emergency service responds to life-threatening situations — accidents, cardiac events, strokes, respiratory distress, and more. Fully equipped with advanced life support systems, our emergency ambulances are staffed by trained paramedics who begin critical care the moment they arrive at your door. We work closely with receiving hospitals to ensure seamless handover and continuity of care.</p></div>
+    <div class="service-item"><h3>ICU Ambulance (Advanced Life Support) <span class="service-badge">Critical Care</span></h3><p>For patients who require intensive monitoring and care during transport, our ICU ambulances are equipped with ventilators, cardiac monitors, defibrillators, infusion pumps, and all essential critical care equipment. Staffed by trained ICU paramedics, these units bring hospital-level care on the road — essential for post-operative patients, trauma victims, and those in critical condition.</p></div>
+    <div class="service-item"><h3>Inter-Hospital Patient Transfer</h3><p>When patients need to move between hospitals — for specialist treatment, better facilities, or closer to family — we ensure the journey is safe, smooth, and medically supported throughout. Our transfer team coordinates with both the referring and receiving hospitals to maintain care continuity.</p></div>
+    <div class="service-item"><h3>Neonatal & Paediatric Ambulance <span class="service-badge">Specialist</span></h3><p>Our neonatal ambulances are specially designed for the safe transport of newborns and young children. Equipped with transport incubators, neonatal ventilators, and temperature-controlled environments, these units are staffed by paramedics experienced in paediatric emergencies.</p></div>
+    <div class="service-item"><h3>Non-Emergency Medical Transport</h3><p>Whether it's a hospital appointment, a discharge, dialysis visit, or rehabilitation session, our non-emergency transport service provides comfortable, safe, and reliable transportation for patients who need medical or mobility support on the way.</p></div>
+    <div class="service-item"><h3>Event Medical Cover</h3><p>Planning a large event, sports meet, or public gathering? Our medical teams provide on-site standby ambulance services with trained first responders — ensuring that medical help is always close at hand for your guests, athletes, or audience.</p></div>
+    <div class="service-item"><h3>Air Ambulance Coordination</h3><p>For patients requiring rapid long-distance transport or remote evacuation, we coordinate air ambulance services with trusted aviation medical partners. We manage the full journey — from ground pickup to airside transfer and onward hospital handover.</p></div>
+    <div style="margin-top:2.5rem;">
+      <button class="btn-white" style="background:var(--red);color:#fff;" onclick="showPage('contact')">Book a Service →</button>
+    </div>
+  </div>
+
+</div><!-- end services -->
+
+
+<!-- ══════════════════════════════════════
+     PAGE: CONTACT
+══════════════════════════════════════ -->
+<div class="page-view" id="page-contact">
+
+  <div class="contact-hero">
+    <div class="contact-hero-inner">
+      <div class="hero-tag">Contact & Book Now</div>
+      <h1>We're One Call Away</h1>
+      <p>In an emergency, call us immediately. For planned transport or enquiries, fill the form below — our team responds within 30 minutes.</p>
+    </div>
+  </div>
+
+  <div class="emergency-strip">
+    <div class="emergency-strip-inner">
+      <div class="strip-left">
+        <div class="strip-icon">
+          <svg viewBox="0 0 24 24"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z"/></svg>
+        </div>
+        <div>
+          <div class="strip-label">Emergency Helpline — Available 24/7</div>
+          <div class="strip-nums">+91 90564 34553 &nbsp;/&nbsp; +91 90411 14553</div>
+        </div>
+      </div>
+      <div class="strip-badge">24 hrs · 7 days · 365 days</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-gap">
+      <span class="page-label">Get in touch</span>
+      <div class="section-head"><h2>All Ways to Reach Us</h2></div>
+      <div class="info-grid">
+        <div class="info-tile"><span class="info-tile-icon">📞</span><div class="info-tile-label">Phone (Line 1)</div><div class="info-tile-val"><a href="tel:+919056434553">+91 90564 34553</a></div></div>
+        <div class="info-tile"><span class="info-tile-icon">📞</span><div class="info-tile-label">Phone (Line 2)</div><div class="info-tile-val"><a href="tel:+919041114553">+91 90411 14553</a></div></div>
+        <div class="info-tile whatsapp"><span class="info-tile-icon">💬</span><div class="info-tile-label">WhatsApp Booking</div><div class="info-tile-val"><a href="https://wa.me/919056434553">+91 90564 34553</a></div></div>
+        <div class="info-tile"><span class="info-tile-icon">✉️</span><div class="info-tile-label">Email</div><div class="info-tile-val"><a href="mailto:saihealthcare98@gmail.com">saihealthcare98@gmail.com</a></div></div>
+        <div class="info-tile"><span class="info-tile-icon">🕐</span><div class="info-tile-label">Operating Hours</div><div class="info-tile-val">24 Hours · 7 Days<br><span style="font-size:13px;color:var(--muted)">Including all holidays</span></div></div>
+        <div class="info-tile"><span class="info-tile-icon">📍</span><div class="info-tile-label">Coverage</div><div class="info-tile-val">Pan-India<br><span style="font-size:13px;color:var(--muted)">Cities, towns & districts</span></div></div>
+      </div>
+    </div>
+
+    <div class="section-gap">
+      <span class="page-label">Book an ambulance</span>
+      <div class="section-head"><h2>Send Us an Enquiry</h2><p>Fill in the details below and our team will contact you shortly.</p></div>
+      <div class="form-card">
+        <div class="form-grid">
+          <div class="field"><label>Patient / Contact Name *</label><input type="text" placeholder="Full name" id="f-name"></div>
+          <div class="field"><label>Phone Number *</label><input type="tel" placeholder="+91 XXXXX XXXXX" id="f-phone"></div>
+        </div>
+        <div class="form-grid">
+          <div class="field"><label>Email Address</label><input type="email" placeholder="your@email.com" id="f-email"></div>
+          <div class="field"><label>City / Pick-up Location *</label><input type="text" placeholder="e.g. Delhi, Mumbai, Chennai" id="f-city"></div>
+        </div>
+        <div class="form-grid">
+          <div class="field">
+            <label>Service Required *</label>
+            <select id="f-service">
+              <option value="">-- Select a service --</option>
+              <option>Emergency Ambulance</option>
+              <option>ICU / Advanced Life Support</option>
+              <option>Inter-Hospital Transfer</option>
+              <option>Neonatal / Paediatric Transport</option>
+              <option>Non-Emergency Transport</option>
+              <option>Event Medical Cover</option>
+              <option>Air Ambulance Coordination</option>
+              <option>Other / General Enquiry</option>
+            </select>
+          </div>
+          <div class="field"><label>Preferred Date & Time</label><input type="datetime-local" id="f-datetime"></div>
+        </div>
+        <div class="form-grid">
+          <div class="field"><label>Destination Hospital (if known)</label><input type="text" placeholder="Hospital name & city" id="f-hospital"></div>
+          <div class="field">
+            <label>Patient Condition</label>
+            <select id="f-condition">
+              <option value="">-- Select --</option>
+              <option>Critical / Life-threatening</option>
+              <option>Serious but stable</option>
+              <option>Stable / Planned transport</option>
+              <option>Newborn / Neonatal</option>
+              <option>Other</option>
+              <option>Dead Body Transport</option>
+              <option>Mentally Unstable</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-grid full">
+          <div class="field"><label>Additional Details</label><textarea id="f-details" placeholder="Any other information — patient's condition, special equipment needed, access restrictions, etc."></textarea></div>
+        </div>
+        <div class="form-actions">
+          <button class="submit-btn" onclick="handleSubmit()">Send Enquiry →</button>
+          <p class="form-note">For immediate emergencies, <strong>please call our helpline</strong> rather than using this form. We typically respond within 30 minutes.</p>
+        </div>
+        <div class="success-msg" id="success-msg">
+          <p>✅ Your enquiry has been sent successfully! We will contact you within 30 minutes. For emergencies, call <strong>+91 90564 34553</strong> immediately.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="reassure">
+      <div class="reassure-item"><div class="reassure-icon">⚡</div><div class="reassure-text"><strong>Rapid Response</strong><span>We aim to reach you as fast as possible after your call.</span></div></div>
+      <div class="reassure-item"><div class="reassure-icon">🩺</div><div class="reassure-text"><strong>Trained Paramedics</strong><span>Every vehicle is staffed by certified medical professionals.</span></div></div>
+      <div class="reassure-item"><div class="reassure-icon">🔒</div><div class="reassure-text"><strong>Your Privacy is Safe</strong><span>All patient information is handled with strict confidentiality.</span></div></div>
+      <div class="reassure-item"><div class="reassure-icon">❤️</div><div class="reassure-text"><strong>Always Here for You</strong><span>24 hours, 7 days — we never close, so you're never alone.</span></div></div>
+    </div>
+  </div>
+
+</div><!-- end contact -->
+
+</div><!-- end page-wrapper -->
+
+<footer>
+  <strong>Sai Ambulance Services</strong> &nbsp;·&nbsp; Emergency: +91 90564 34553 / +91 90411 14553 &nbsp;·&nbsp; saihealthcare98@gmail.com &nbsp;·&nbsp; Pan-India
+</footer>
+
+<script>
+  let currentPage = 'home';
+
+  function showPage(page) {
+    if (page === currentPage) return;
+    const from = document.getElementById('page-' + currentPage);
+    const to   = document.getElementById('page-' + page);
+
+    // Update nav
+    document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+    const navEl = document.getElementById('nav-' + page);
+    if (navEl) navEl.classList.add('active');
+
+    // Fade out
+    from.classList.remove('visible');
+    setTimeout(() => {
+      from.classList.remove('active');
+      to.classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        to.classList.add('visible');
+        currentPage = page;
+      }));
+    }, 380);
+  }
+
+  // Init
+  window.addEventListener('DOMContentLoaded', () => {
+    const home = document.getElementById('page-home');
+    requestAnimationFrame(() => requestAnimationFrame(() => home.classList.add('visible')));
+  });
+
+  /* WEB3FORMS */
+  async function handleSubmit() {
+    const name      = document.getElementById('f-name').value.trim();
+    const phone     = document.getElementById('f-phone').value.trim();
+    const city      = document.getElementById('f-city').value.trim();
+    const service   = document.getElementById('f-service').value;
+    const email     = document.getElementById('f-email').value.trim();
+    const datetime  = document.getElementById('f-datetime').value;
+    const hospital  = document.getElementById('f-hospital').value.trim();
+    const condition = document.getElementById('f-condition').value;
+    const details   = document.getElementById('f-details').value.trim();
+
+    if (!name || !phone || !city || !service) {
+      alert('Please fill in all required fields (Name, Phone, City, and Service).');
+      return;
+    }
+    const btn = document.querySelector('.submit-btn');
+    btn.disabled = true; btn.textContent = 'Sending…'; btn.style.opacity = '0.7';
+
+    try {
+      const res = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({
+          access_key : 'ee703a26-1b24-4f44-aeda-de58e136fdad',
+          subject    : `New Ambulance Enquiry — ${name}`,
+          from_name  : 'Sai Ambulance Services',
+          name, phone, city, service,
+          email     : email     || 'Not provided',
+          condition : condition || 'Not specified',
+          hospital  : hospital  || 'Not specified',
+          datetime  : datetime  || 'Not specified',
+          details   : details   || 'None',
+          message   : `Sai Ambulance Enquiry\n\nName: ${name}\nPhone: ${phone}\nEmail: ${email||'Not provided'}\nCity: ${city}\nService: ${service}\nCondition: ${condition||'Not specified'}\nHospital: ${hospital||'Not specified'}\nDate/Time: ${datetime||'Not specified'}\n\nDetails:\n${details||'None'}`
+        })
+      });
+      const result = await res.json();
+      if (result.success) {
+        document.getElementById('success-msg').style.display = 'block';
+        btn.textContent = 'Sent ✓';
+        document.getElementById('success-msg').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      } else { throw new Error(result.message); }
+    } catch (err) {
+      btn.disabled = false; btn.textContent = 'Send Enquiry →'; btn.style.opacity = '1';
+      alert('Something went wrong. Please call us at +91 90564 34553.');
+    }
+  }
+</script>
+</body>
+</html>
